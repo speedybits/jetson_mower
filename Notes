@@ -1,0 +1,24 @@
+Training
+========
+1) python3 train.py --model-dir=models/grass_nograss --batch-size=4 --workers=1 --epochs=1 data/grass_nograss
+2) python3 onnx_export.py --model-dir=models/grass_nograss
+
+Testing
+=======
+NET=models/grass_nograss
+DATASET=data/grass_nograss
+mkdir $DATASET/test_output_grass $DATASET/test_output_turn
+
+imagenet --model=$NET/resnet18.onnx --input_blob=input_0 --output_blob=output_0 --labels=$DATASET/labels.txt $DATASET/test/grass $DATASET/test_output_grass
+
+imagenet --model=$NET/resnet18.onnx --input_blob=input_0 --output_blob=output_0 --labels=$DATASET/labels.txt $DATASET/test/turn $DATASET/test_output_turn
+
+Running
+=======
+/home/speedybits/jetson_mo/mo.py --model=/home/speedybits/jetson-inference/python/training/classification/models/grass_nograss/resnet18.onnx --input_blob=input_0 --output_blob=output_0 --labels=/home/speedybits/jetson-inference/python/training/classification/data/grass_nograss/labels.txt csi://0
+
+
+Setup to run on power-on
+========================
+sudo systemctl enable robot
+sudo systemctl disable robot
