@@ -1,7 +1,8 @@
 Training
 ========
-1) python3 train.py --model-dir=models/grass_nograss --batch-size=4 --workers=1 --epochs=1 data/grass_nograss
-2) python3 onnx_export.py --model-dir=models/grass_nograss
+1) cd /home/speedybits/jetson-inference/python/training/classification
+2) python3 train.py --model-dir=models/grass_turn --batch-size=4 --workers=1 --epochs=1 data/grass_turn
+3) python3 onnx_export.py --model-dir=models/grass_turn
 
 Testing
 =======
@@ -15,10 +16,20 @@ imagenet --model=$NET/resnet18.onnx --input_blob=input_0 --output_blob=output_0 
 
 Running
 =======
-/home/speedybits/jetson_mower/mo.py --model=/home/speedybits/jetson-inference/python/training/classification/models/grass_nograss/resnet18.onnx --input_blob=input_0 --output_blob=output_0 --labels=/home/speedybits/jetson-inference/python/training/classification/data/grass_nograss/labels.txt csi://0
+/home/speedybits/jetson_mower/mo.py --model=/home/speedybits/jetson-inference/python/training/classification/models/grass_turn/resnet18.onnx --input_blob=input_0 --output_blob=output_0 --labels=/home/speedybits/jetson-inference/python/training/classification/data/grass_turn/labels.txt csi://0
 
 
 Setup to run on power-on
 ========================
 sudo systemctl enable robot
 sudo systemctl disable robot
+
+
+Resizing images
+===============
+Use nautilus
+
+
+Capture images interactively
+============================
+camera-capture csi://0
