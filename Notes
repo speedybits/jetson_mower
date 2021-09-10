@@ -6,9 +6,11 @@ Training
 
 Testing
 =======
-NET=models/grass_nograss
-DATASET=data/grass_nograss
-mkdir $DATASET/test_output_grass $DATASET/test_output_turn
+cd /home/speedybits/jetson-inference/python/training/classification
+NET=models/grass_turn
+DATASET=data/grass_turn
+mkdir $DATASET/test_output_grass
+mkdir $DATASET/test_output_turn
 
 imagenet --model=$NET/resnet18.onnx --input_blob=input_0 --output_blob=output_0 --labels=$DATASET/labels.txt $DATASET/test/grass $DATASET/test_output_grass
 
