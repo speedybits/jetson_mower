@@ -78,7 +78,6 @@ forward = "Mow!"
 reverse = "Turn around"
 loop = 0
 toggle = 0
-gonelow=0
 # process frames until the user exits
 while True:
   # capture the next image
@@ -102,17 +101,11 @@ while True:
 
   if counter==sureness:
     # overlay the result on the image	
-    #font.OverlayText(img, img.width, img.height, "{:05.2f}% {:s}".format(confidence * 100, class_desc), 5, 5, font.White, font.Gray40)
     font.OverlayText(img, img.width, img.height, "{:05.2f}% {:s}".format(confidence * 100, forward), 5, 5, font.White, font.Gray40)
     GPIO.output(output_pin, 1)
-    gonelow=0
-  elif counter==(-1 * sureness) & gonelow==0:
-    gonelow=0
+  elif counter==(-1 * sureness):
     font.OverlayText(img, img.width, img.height, "{:05.2f}% {:s}".format(confidence * 100, reverse), 5, 5, font.White, font.Gray40)
     GPIO.output(output_pin, 0)
-  elif gonelow==1:
-    font.OverlayText(img, img.width, img.height, "{:05.2f}% {:s}".format(confidence * 100, reverse), 5, 5, font.White, font.Gray40)
-    GPIO.output(output_pin, 1)
 	
   # render the image
   output.Render(img)
