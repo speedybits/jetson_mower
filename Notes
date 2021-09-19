@@ -1,7 +1,7 @@
 Training
 ========
 1) cd /home/speedybits/jetson-inference/python/training/classification
-2) python3 train.py --model-dir=models/grass_turn --batch-size=4 --workers=1 --epochs=1 data/grass_turn
+2) python3 train.py --model-dir=models/grass_turn --batch-size=4 --workers=1 --epochs=100 data/grass_turn
 3) python3 onnx_export.py --model-dir=models/grass_turn
 
 Testing
@@ -35,3 +35,8 @@ Use nautilus
 Capture images interactively
 ============================
 camera-capture csi://0
+
+
+A system problem has been detected (GUI)
+========================================
+sudo rm /var/crash/*
