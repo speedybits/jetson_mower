@@ -72,10 +72,10 @@ input = jetson.utils.videoSource(opt.input_URI, argv=sys.argv)
 output = jetson.utils.videoOutput(opt.output_URI, argv=sys.argv+is_headless)
 font = jetson.utils.cudaFont()
 
-sureness = 10
-counter = 0
+sureness = 5
 forward = "Mow!"
-reverse = "Turn around"
+notgrass = "Turn (NOT grass)"
+maybegrass = "Turn (Maybe grass)"
 loop = 0
 toggle = 0
 # process frames until the user exits
@@ -89,23 +89,16 @@ while True:
   # find the object description
   class_desc = net.GetClassDesc(class_id)
 
-  if class_desc=="grass":
-    if counter<sureness:   
-      counter+=1
+  if confidence>.90 and class_desc!="grass":
+    # Very confident it is NOT grass
+    font.OverlayText(img, img.width, img.height, "{:05.2f}% {:s}".format(confidence * 100, notgrass), 5, 5, font.White, font.Gray40)
+    GPIO.output(output_pin, 0)
+    print('Turn (not grass) ', class_desc, confidence)
   else:
-    if counter>(-1 * sureness):
-      counter-=1
-
-  print("counter")
-  print(counter)
-
-  if counter==sureness:
-    # overlay the result on the image	
+    # Else it must be grass
     font.OverlayText(img, img.width, img.height, "{:05.2f}% {:s}".format(confidence * 100, forward), 5, 5, font.White, font.Gray40)
     GPIO.output(output_pin, 1)
-  elif counter==(-1 * sureness):
-    font.OverlayText(img, img.width, img.height, "{:05.2f}% {:s}".format(confidence * 100, reverse), 5, 5, font.White, font.Gray40)
-    GPIO.output(output_pin, 0)
+    print('Grass', confidence)
 	
   # render the image
   output.Render(img)

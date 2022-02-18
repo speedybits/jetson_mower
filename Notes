@@ -1,28 +1,43 @@
 Training
 ========
-1) cd /home/speedybits/jetson-inference/python/training/classification
-2) python3 train.py --model-dir=models/grass_turn --batch-size=4 --workers=1 --epochs=100 data/grass_turn
-3) python3 onnx_export.py --model-dir=models/grass_turn
+cd /home/speedybits/jetson-inference/python/training/classification
+python3 train.py --model-dir=models/mobot_bigdata --batch-size=2 --workers=1 --epochs=100 data/mobot_bigdata
+
+python3 train.py --model-dir=models/mobot_bigdata --epochs=50 data/mobot_bigdata
+
+python3 onnx_export.py --model-dir=models/mobot_bigdata
+
+Continuing Training
+===================
+cd /home/speedybits/jetson-inference/python/training/classification
+python3 train.py --resume models/mobot_up/checkpoint.pth.tar --model-dir=models/mobot_up --batch-size=2 --workers=1 --epochs=200 data/mobot_up
+
 
 Testing
 =======
 cd /home/speedybits/jetson-inference/python/training/classification
-NET=models/grass_turn
-DATASET=data/grass_turn
-mkdir $DATASET/test_output_grass
-mkdir $DATASET/test_output_turn
+INPUTDIR=
+OUTPUTDIR=
+imagenet --model=models/mobot_bigdata/resnet18.onnx --input_blob=input_0 --output_blob=output_0 --labels=data/mobot_bigdata/labels.txt $INPUTDIR $OUTPUTDIR
 
-imagenet --model=$NET/resnet18.onnx --input_blob=input_0 --output_blob=output_0 --labels=$DATASET/labels.txt $DATASET/test/grass $DATASET/test_output_grass
+Running with camera on generic database
+=======================================
+imagenet --input_blob=input_0 --output_blob=output_0 csi://0
+depthnet --visualize=depth --input_blob=input_0 --output_blob=output_0 csi://0
 
-imagenet --model=$NET/resnet18.onnx --input_blob=input_0 --output_blob=output_0 --labels=$DATASET/labels.txt $DATASET/test/turn $DATASET/test_output_turn
+Running with camera
+===================
+~/jetson_mower/mo.py --model=/home/speedybits/jetson-inference/python/training/classification/models/mobot_bigdata/resnet18.onnx --input_blob=input_0 --output_blob=output_0 --labels=/home/speedybits/jetson-inference/python/training/classification/data/mobot_bigdata/labels.txt csi://0
 
-Running
-=======
-/home/speedybits/jetson_mower/mo.py --model=/home/speedybits/jetson-inference/python/training/classification/models/grass_turn/resnet18.onnx --input_blob=input_0 --output_blob=output_0 --labels=/home/speedybits/jetson-inference/python/training/classification/data/grass_turn/labels.txt csi://0
+Running on mp4 video
+====================
+~/jetson_mower/mo.py --model=/home/speedybits/jetson-inference/python/training/classification/models/mobot_bigdata/resnet18.onnx --input_blob=input_0 --output_blob=output_0 --labels=/home/speedybits/jetson-inference/python/training/classification/data/mobot_bigdata/labels.txt ~/Downloads/test2.mp4
 
 
 Setup to run on power-on
 ========================
+https://forums.developer.nvidia.com/t/how-to-run-a-script-on-boot/108411/4
+vi /lib/systemd/system/robot.service
 sudo systemctl enable robot
 sudo systemctl disable robot
 
@@ -30,6 +45,10 @@ sudo systemctl disable robot
 Resizing images
 ===============
 Use nautilus
+
+Batch image processing (blur)
+=============================
+convert file.JPG
 
 
 Capture images interactively
@@ -40,3 +59,46 @@ camera-capture csi://0
 A system problem has been detected (GUI)
 ========================================
 sudo rm /var/crash/*
+
+
+
+
+
+Capturing PNG's from video
+==========================
+Record video to google drive
+cd ~/Downloads
+ffmpeg -i test.MOV test.mp4
+rm *.MOV
+ffmpeg -i test.mp4 -vf fps=1 20210924a%d.png
+mogrify -format jpg *.png
+rm *.png
+
+
+
+
+Crop two images
+===============
+convert test1.jpg -crop 960x1080 test_out_crop.jpg
+mogrify -crop 960x1080 -path ./cropped *.jpg
+
+Combining two images
+====================
+convert +append test1.jpg test2.jpg test_out.jpg
+
+
+Script
+======
+mkdir cropped
+mogrify -crop 960x1080 -path ./cropped *.jpg
+cd cropped
+filelist=$(ls *.jpg)
+count=0
+for file1 in $filelist; do
+for file2 in $filelist; do
+convert +append $file1 $file2 comb_$count.jpg
+((count=count+1))
+done
+done
+
+
