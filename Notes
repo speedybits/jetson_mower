@@ -1,3 +1,9 @@
+GIT
+===
+git status
+git commit -a -m "Update
+git push
+
 Training
 ========
 cd /home/speedybits/jetson-inference/python/training/classification
