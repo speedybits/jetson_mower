@@ -40,6 +40,7 @@ https://forums.developer.nvidia.com/t/how-to-run-a-script-on-boot/108411/4
 vi /lib/systemd/system/robot.service
 sudo systemctl enable robot
 sudo systemctl disable robot
+password is mobot
 
 
 Resizing images
